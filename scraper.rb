@@ -29,7 +29,7 @@ end
 # Each mission row in the table
 class Mission < Scraped::HTML
   field :spacecraft do
-    tds[0].css('a').text.tidy
+    tds[0].css('a').map(&:text).map(&:tidy).first
   end
 
   field :spacecraft_id do
@@ -41,7 +41,11 @@ class Mission < Scraped::HTML
   end
 
   field :operator do
-    tds[2].css('a').map(&:text).map(&:tidy).first
+    tds[2].css('a').map(&:text).map(&:tidy) - country
+  end
+
+  field :country do
+    tds[2].css('.flagicon').xpath('./following-sibling::a').map(&:text)
   end
 
   field :mission do
@@ -57,11 +61,11 @@ class Mission < Scraped::HTML
   end
 
   field :carrier do
-    tds[6].text.tidy
+    tds[6].css('a').map(&:text).map(&:tidy)
   end
 
   field :carrier_id do
-    tds[6].css('a/@wikidata').first.text
+    tds[6].css('a/@wikidata').map(&:text)
   end
 
   private
